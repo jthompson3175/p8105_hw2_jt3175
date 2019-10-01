@@ -1,0 +1,13 @@
+---
+title: "Homework 2"
+author: "Julia Thompson"
+date: "10/1/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(readxl)
+```
