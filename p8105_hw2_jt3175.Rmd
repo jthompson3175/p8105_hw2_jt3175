@@ -2,7 +2,7 @@
 title: "Homework 2"
 author: "Julia Thompson"
 date: "10/1/2019"
-output: github_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -14,6 +14,8 @@ library(readxl)
 
 ## Problem 1
 
+Read and cleaned Mr. Trash Wheel data.
+
 ```{r}
 trash_data = read_excel(
   path = "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
@@ -24,7 +26,7 @@ trash_data = read_excel(
   mutate(sports_balls = as.integer(sports_balls))
 ```
 
-Read and clean precipitation data for 2017 and 2018. For each, omit rows without precipitation data and add a variable year. 
+Read and cleaned precipitation data for 2017 and 2018. Rows without precipitation data were omitted and a variable was added for _year_.
 
 ```{r}
 precip_2017 = read_excel(
@@ -44,7 +46,7 @@ precip_2018 = read_excel(
   mutate(year = 2018)
 ```
 
-Next, combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
+Combined precipitation datasets and converted month to a character variable.
 
 ```{r}
 precip_data = 
@@ -57,4 +59,10 @@ precip_data =
     month = month.name[]
   )
 ```
+
+The first dataset created was _trash_data_, which is made up of `r nrow(trash_data)` observations and `r ncol(trash_data)` variables. It contains a variable _dumpster_, which ranges from `r min(pull(trash_data,dumpster))` to `r max(pull(trash_data,dumpster))` and denotes the dumpster ID. For each dumpster, we have variables _month_, _year_, and _date_ to inform us about when the data was collected. Additionally, there are several variables that correspond to specifics about what each dumpster collected (such as _plastic_bottles_ and _chip_bags_). The median number of sports balls collected in a dumpster in 2017 was `r median(pull(trash_data, sports_balls)[pull(trash_data, year)==2017])`.
+
+The second dataset created was _precip_data_, made up of `r nrow(precip_data)` observations and `r ncol(precip_data)` variables. The variables are _month_, _total_precip_2017_, and _total_precip_2018_, which give the month of the year (January through December), and inches of rainfall per month for 2017 and 2018 respectively. The total precipitation in 2018 was `r sum(pull(precip_data, total_precip_2018))` inches, which is a large increase compared to the total precipitation in 2017 of `r sum(pull(precip_data, total_precip_2017))` inches.
+
+## Problem 2
 
