@@ -48,10 +48,9 @@ precip_2018 = read_excel(
 
 Combined precipitation datasets and converted month to a character variable.
 
+**Does this need to use a .join function? Also, should it be in long format- i.e. just use bind rows and don't pivot wider?**
+
 ```{r}
-
-# CHANGE THIS AND USE ONE OF THE JOIN FUNCITONS!
-
 precip_data = 
   bind_rows(precip_2017, precip_2018) %>% 
   pivot_wider(
@@ -71,6 +70,8 @@ The second dataset created was _precip_data_, made up of `r nrow(precip_data)` o
 
 First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
 
+Note: a few values in prez_gop had 2 instead of 1. Recoded those to be 1 below.
+
 ```{r}
 pols_data = read_csv(
   file = "./data/pols-month.csv") %>% 
@@ -81,10 +82,12 @@ pols_data = read_csv(
     president = prez_gop - prez_dem,
     president = recode(president, `-1` = "dem", `1` = "gop")
   ) %>% 
-  select(year, month, president, everything(), -day)
+  select(year, month, president, everything(), -day, -prez_gop, -prez_dem)
 ```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+
+**Should we also delete the day for this one?**
 
 ```{r}
 snp_data = read_csv(
@@ -98,17 +101,51 @@ snp_data = read_csv(
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
 
+**This is horrible and there must be a better way. Either use rename(1:12 = jan:dec), or just use month.abb from the beginning and not get the full name.**
+
 ```{r}
 unemp_data = read_csv(
   file = "./data/unemployment.csv") %>% 
   janitor::clean_names() %>% 
-  #mutate(
-  #  rename(c(jan:dec) = c(`1`:`12`))
-  #) %>% 
+  rename(`1` = jan, `2` = feb, `3` = mar, `4` = apr, `5` = may, `6` = jun, `7` = jul, `8` = aug, `9` = sep,           `10` = oct, `11` = nov, `12` = dec) %>% 
   pivot_longer(
-    cols = jan:dec,
+    cols = `1`:`12`,
     names_to = "month",
-    values_to = "value"
+    values_to = "unemp_pct"
+  ) %>% 
+  mutate(
+    month = as.integer(month),
+    month = month.name[month]
   )
+
 ```
+
+Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+```{r}
+snp_pols = 
+  left_join(pols_data, snp_data, by = c("year","month"))
+
+snp_pols_unemp = 
+  left_join(snp_pols, unemp_data, by = c("year", "month"))
+```
+
+## Problem 3
+
+**Is there a better way to recode these?**
+
+```{r}
+baby_data = read_csv(
+  file = "./data/Popular_Baby_Names.csv") %>% 
+    janitor::clean_names() %>% 
+  mutate(
+    childs_first_name = str_to_sentence(childs_first_name),
+    ethnicity = recode(ethnicity, "WHITE NON HISP" = "WHITE NON HISPANIC",
+                                    "ASIAN AND PACI" = "ASIAN AND PACIFIC ISLANDER",
+                                    "BLACK NON HISP" = "BLACK NON HISPANIC")
+  ) %>% 
+  distinct()
+```
+
+Produce a well-structured, reader-friendly table showing the rank in popularity of the name “Olivia” as a female baby name over time; this should have rows for ethnicities and columns for year. Produce a similar table showing the most popular name among male children over time.
 
