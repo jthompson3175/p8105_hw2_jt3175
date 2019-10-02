@@ -98,3 +98,17 @@ snp_data = read_csv(
 
 Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
 
+```{r}
+unemp_data = read_csv(
+  file = "./data/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  #mutate(
+  #  rename(c(jan:dec) = c(`1`:`12`))
+  #) %>% 
+  pivot_longer(
+    cols = jan:dec,
+    names_to = "month",
+    values_to = "value"
+  )
+```
+
