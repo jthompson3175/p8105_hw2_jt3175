@@ -2,7 +2,7 @@
 title: "Homework 2"
 author: "Julia Thompson"
 date: "10/1/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
