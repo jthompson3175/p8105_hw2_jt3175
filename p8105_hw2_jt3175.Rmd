@@ -49,6 +49,9 @@ precip_2018 = read_excel(
 Combined precipitation datasets and converted month to a character variable.
 
 ```{r}
+
+# CHANGE THIS AND USE ONE OF THE JOIN FUNCITONS!
+
 precip_data = 
   bind_rows(precip_2017, precip_2018) %>% 
   pivot_wider(
@@ -65,4 +68,23 @@ The first dataset created was _trash_data_, which is made up of `r nrow(trash_da
 The second dataset created was _precip_data_, made up of `r nrow(precip_data)` observations and `r ncol(precip_data)` variables. The variables are _month_, _total_precip_2017_, and _total_precip_2018_, which give the month of the year (January through December), and inches of rainfall per month for 2017 and 2018 respectively. The total precipitation in 2018 was `r sum(pull(precip_data, total_precip_2018))` inches, which is a large increase compared to the total precipitation in 2017 of `r sum(pull(precip_data, total_precip_2017))` inches.
 
 ## Problem 2
+
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+
+```{r}
+pols_data = read_csv(
+  file = "./data/pols-month.csv") %>% 
+  separate(col = mon, into = c("year", "month", "day"), sep = "-", convert = TRUE) %>% 
+  mutate(
+    month = month.name[month]
+  ) %>% 
+  pivot_longer(
+    cols = c(prez_gop, prez_dem),
+    names_to = "president",
+    names_prefix = "prez_",
+    values_to = "indicator") %>% 
+  select(year, month, president, everything(), -day, -indicator)
+```
+
+Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
 
