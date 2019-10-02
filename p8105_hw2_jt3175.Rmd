@@ -76,15 +76,25 @@ pols_data = read_csv(
   file = "./data/pols-month.csv") %>% 
   separate(col = mon, into = c("year", "month", "day"), sep = "-", convert = TRUE) %>% 
   mutate(
-    month = month.name[month]
+    prez_gop = ceiling(prez_gop/2),
+    month = month.name[month],
+    president = prez_gop - prez_dem,
+    president = recode(president, `-1` = "dem", `1` = "gop")
   ) %>% 
-  pivot_longer(
-    cols = c(prez_gop, prez_dem),
-    names_to = "president",
-    names_prefix = "prez_",
-    values_to = "indicator") %>% 
-  select(year, month, president, everything(), -day, -indicator)
+  select(year, month, president, everything(), -day)
 ```
 
 Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+
+```{r}
+snp_data = read_csv(
+  file = "./data/snp.csv") %>% 
+  separate(col = date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
+  mutate(
+    month = month.name[month]
+  ) %>% 
+  select(year, month, everything(), -day)
+```
+
+Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
 
