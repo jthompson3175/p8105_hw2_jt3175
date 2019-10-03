@@ -120,7 +120,11 @@ snp_pols_unemp =
   left_join(snp_pols, unemp_data, by = c("year", "month"))
 ```
 
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+The _pols_data_ dataset has `r ncol(pols_data)` variables and `r nrow(pols_data)` observations. It contains data on the political party in power in various branches of government from `r min(pull(pols_data, year))` to `r max(pull(pols_data, year))`. Examples of this are _gov_gop_, which contains the number of republican governors, and _sen_dem_, the number of democratic senators on a given date. 
+
+The _snp_data_ dataset contains information on the S&P stock index from `r min(pull(snp_data, year))` to `r max(pull(snp_data, year))`, and has `r ncol(snp_data)` variables and `r nrow(snp_data)` observations. The variables are _year_, _month_, and _close_, which notes the closing values of the S&P index on the given date. 
+
+The _unemp_data_ dataset has `r ncol(unemp_data)` variables and `r nrow(unemp_data)` observations. The variables include _year_, _month_, and _unemp_pct_ from `r min(pull(unemp_data, year))` to `r max(pull(unemp_data, year))`. _Unemp_pct_ gives the percentage of unemployment for each given date, and ranges from `r min(pull(unemp_data, unemp_pct), na.rm=TRUE)` to `r max(pull(unemp_data, unemp_pct), na.rm=TRUE)`.
 
 ## Problem 3
 
